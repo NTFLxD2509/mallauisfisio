@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malla Curricular de Fisioterapia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .semester {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .semester-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #444;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .course {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+        }
+        .course:hover {
+            opacity: 0.8;
+        }
+        .course.G {
+            background-color: #ffcccc;
+            border-left: 4px solid #ff0000;
+        }
+        .course.D {
+            background-color: #ccffcc;
+            border-left: 4px solid #00aa00;
+        }
+        .course.P {
+            background-color: #cce5ff;
+            border-left: 4px solid #0066cc;
+        }
+        .course.C {
+            background-color: #e6ccff;
+            border-left: 4px solid #6600cc;
+        }
+        .completed {
+            text-decoration: line-through;
+            color: #666;
+        }
+        .credits-info {
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: right;
+        }
+        .progress-container {
+            margin-top: 30px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .progress-bar {
+            height: 30px;
+            background-color: #e0e0e0;
+            border-radius: 15px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .total-credits {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+        .prerequisites {
+            font-size: 0.8em;
+            color: #555;
+            margin-top: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Malla Curricular de Fisioterapia</h1>
+    
+    <div id="semesters-container">
+        <!-- Semestres se generarán aquí -->
+    </div>
+    
+    <div class="progress-container">
+        <h2>Progreso General</h2>
+        <div class="progress-bar">
+            <div class="progress" id="total-progress">0%</div>
+        </div>
+        <div class="total-credits">
+            Créditos completados: <span id="completed-credits">0</span> / <span id="total-credits">0</span>
+        </div>
+    </div>
+
+    <script>
+        const curriculum = [
+            {
+                semester: "Primer Semestre",
+                courses: [
+                    { name: "TALLER DE LENGUAJE", code: "23427", credits: 3, type: "G", prerequisites: [] },
+                    { name: "BIOCIENCIAS I", code: "20422", credits: 6, type: "G", prerequisites: [], unlocks: ["BIOCIENCIAS II", "MORFOFISIOLOGIA GENERAL"] },
+                    { name: "HISTORIA DE LA CIENCIA", code: "22321", credits: 1, type: "G", prerequisites: [] },
+                    { name: "INTRODUCCION A LA FISIOTERAPIA", code: "22322", credits: 3, type: "D", prerequisites: [], unlocks: ["HOMBRE Y MOVIMIENTO", "ETICA PROFESIONAL"] },
+                    { name: "CULTURA FISICA Y DEPORTIVA", code: "23423", credits: 1, type: "G", prerequisites: [] },
+                    { name: "VIDA Y CULTURA UNIVERSITARIA", code: "24948", credits: 0, type: "G", prerequisites: [] },
+                    { name: "CONTEXTO I", code: "SIN CODIGO", credits: 3, type: "C", prerequisites: [], unlocks: ["CONTEXTO II"] }
+                ]
+            },
+            {
+                semester: "Segundo Semestre",
+                courses: [
+                    { name: "INGLES I", code: "23424", credits: 4, type: "G", prerequisites: [] },
+                    { name: "BIOCIENCIAS II", code: "22356", credits: 5, type: "G", prerequisites: ["BIOCIENCIAS I"], unlocks: ["FISIOLOGIA DEL EJERCICIO"], requiredFor: ["FARMACOLOGIA"] },
+                    { name: "MORFOFISIOLOGIA GENERAL", code: "22323", credits: 7, type: "G", prerequisites: ["BIOCIENCIAS I"], unlocks: ["FUNDAMENTOS DE BIOMECANICA I", "FUNDAMENTOS DE NEUROFISIOLOGIA"] },
+                    { name: "HOMBRE Y MOVIMIENTO", code: "22324", credits: 1, type: "D", prerequisites: ["INTRODUCCION A LA FISIOTERAPIA"] },
+                    { name: "DESARROLLO HUMANO I", code: "22325", credits: 1, type: "G", prerequisites: [], unlocks: ["DESARROLLO HUMANO II"] }
+                ]
+            },
+            {
+                semester: "Tercer Semestre",
+                courses: [
+                    { name: "INGLES II", code: "23425", credits: 4, type: "G", prerequisites: ["INGLES I"] },
+                    { name: "FUNDAMENTOS DE LA BIOMECANICA I", code: "22327", credits: 4, type: "D", prerequisites: ["MORFOFISIOLOGIA GENERAL"], requiredFor: ["FUNDAMENTOS DE BIOMECANICA II"] },
+                    { name: "FUNDAMENTOS DE NEUROFISIOLOGIA", code: "23582", credits: 5, type: "D", prerequisites: ["MORFOFISIOLOGIA GENERAL"], requiredFor: ["FUNDAMENTOS DE BIOMECANICA II", "FISIOLOGIA DEL EJERCICIO"], unlocks: ["PATOLOGIA DEL MOVIMIENTO"] },
+                    { name: "SALUD MENTAL", code: "21957", credits: 2, type: "G", prerequisites: [] },
+                    { name: "DESARROLLO HUMANO II", code: "22326", credits: 1, type: "G", prerequisites: ["DESARROLLO HUMANO I"] },
+                    { name: "PREVENCION DE DESASTRES", code: "22334", credits: 3, type: "G", prerequisites: [] }
+                ]
+            },
+            {
+                semester: "Cuarto Semestre",
+                courses: [
+                    { name: "ETICA PROFESIONAL", code: "22332", credits: 1, type: "D", prerequisites: ["INTRODUCCION A LA FISIOTERAPIA"] },
+                    { name: "FUNDAMENTOS DE BIOMECANICA II", code: "22331", credits: 6, type: "D", prerequisites: ["FUNDAMENTOS DE LA BIOMECANICA I", "FUNDAMENTOS DE NEUROFISIOLOGIA"] },
+                    { name: "SALUD Y COMUNIDAD", code: "23583", credits: 2, type: "D", prerequisites: [], unlocks: ["PROMOCION Y PREVENCION EN FISIOTERAPIA", "INVESTIGACION I", "ADMINISTRACION EN FISIOTERAPIA"] },
+                    { name: "FISIOLOGIA DEL EJERCICIO", code: "22330", credits: 3, type: "D", prerequisites: ["BIOCIENCIAS II", "FUNDAMENTOS DE NEUROFISIOLOGIA"], unlocks: ["FISIOTERAPIA CARDIORESPIRATORIA", "ACONDICIONAMIENTO FISICO"] },
+                    { name: "PATOLOGIA DEL MOVIMIENTO", code: "22336", credits: 4, type: "D", prerequisites: ["FUNDAMENTOS DE NEUROFISIOLOGIA"], unlocks: ["DIAGNOSTICO FISIOTERAPEUTICO", "CONTROL MOTOR"] },
+                    { name: "CONTEXTO II", code: "SIN CODIGO", credits: 3, type: "C", prerequisites: ["CONTEXTO I"] }
+                ]
+            },
+            {
+                semester: "Quinto Semestre",
+                courses: [
+                    { name: "INVESTIGACION I", code: "28040", credits: 4, type: "P", prerequisites: ["SALUD Y COMUNIDAD"], unlocks: ["INVESTIGACION II"] },
+                    { name: "ACONDICIONAMIENTO FISICO", code: "22338", credits: 3, type: "P", prerequisites: ["FISIOLOGIA DEL EJERCICIO"], requiredFor: ["MODALIDADES DEL EJERCICIO TERAPEUTICO I"] },
+                    { name: "ADMINISTRACION EN FISIOTERAPIA", code: "22337", credits: 2, type: "P", prerequisites: ["SALUD Y COMUNIDAD"] },
+                    { name: "FISIOTERAPIA CARDIORESPIRATORIA", code: "23584", credits: 6, type: "P", prerequisites: ["FISIOLOGIA DEL EJERCICIO"], requiredFor: ["FARMACOLOGIA"] },
+                    { name: "DIAGNOSTICO FISIOTERAPEUTICO", code: "22335", credits: 6, type: "P", prerequisites: ["PATOLOGIA DEL MOVIMIENTO"], unlocks: ["FUNCION Y DISCAPACIDAD", "MODALIDADES FISICAS I"], requiredFor: ["MODALIDADES DEL EJERCICIO TERAPEUTICO I"] }
+                ]
+            },
+            {
+                semester: "Sexto Semestre",
+                courses: [
+                    { name: "INVESTIGACION II", code: "22343", credits: 4, type: "P", prerequisites: ["INVESTIGACION I"], unlocks: ["SEMINARIO I"] },
+                    { name: "FARMACOLOGIA", code: "22344", credits: 3, type: "P", prerequisites: ["BIOCIENCIAS II", "FISIOTERAPIA CARDIORESPIRATORIA"] },
+                    { name: "CONTROL MOTOR", code: "23587", credits: 3, type: "P", prerequisites: ["PATOLOGIA DEL MOVIMIENTO"] },
+                    { name: "MODALIDADES DEL EJERCICIO TERAPEUTICO I", code: "23586", credits: 3, type: "P", prerequisites: ["ACONDICIONAMIENTO FISICO", "DIAGNOSTICO FISIOTERAPEUTICO"], unlocks: ["MODALIDADES DEL EJERCICIO TERAPEUTICO II"] },
+                    { name: "MODALIDADES FISICAS I", code: "23585", credits: 3, type: "P", prerequisites: ["DIAGNOSTICO FISIOTERAPEUTICO"], unlocks: ["MODALIDADES FISICAS II"] }
+                ]
+            },
+            {
+                semester: "Septimo Semestre",
+                courses: [
+                    { name: "SEMINARIO I", code: "22347", credits: 4, type: "P", prerequisites: ["INVESTIGACION II"], requiredFor: ["INTERVENCION FISIOTERAPEUTICA"], unlocks: ["SEMINARIO II"] },
+                    { name: "PROMOCION Y PREVENCION EN FISIOTERAPIA", code: "22348", credits: 5, type: "P", prerequisites: ["SALUD Y COMUNIDAD"], requiredFor: ["INTERVENCION FISIOTERAPEUTICA"] },
+                    { name: "FUNCION Y DISCAPACIDAD", code: "22345", credits: 5, type: "P", prerequisites: ["DIAGNOSTICO FISIOTERAPEUTICO"], requiredFor: ["INTERVENCION FISIOTERAPEUTICA"] },
+                    { name: "MODALIDADES DEL EJERCICIO TERAPEUTICO II", code: "23588", credits: 3, type: "P", prerequisites: ["MODALIDADES DEL EJERCICIO TERAPEUTICO I"], requiredFor: ["INTERVENCION FISIOTERAPEUTICA"] },
+                    { name: "MODALIDADES FISICAS II", code: "23589", credits: 4, type: "P", prerequisites: ["MODALIDADES FISICAS I"], requiredFor: ["INTERVENCION FISIOTERAPEUTICA"] }
+                ]
+            },
+            {
+                semester: "Octavo Semestre",
+                courses: [
+                    { name: "SEMINARIO II", code: "22352", credits: 4, type: "P", prerequisites: ["SEMINARIO I"], requiredFor: ["PRACTICA DOCENCIA SERVICIO I"] },
+                    { name: "INTERVENCION FISIOTERAPEUTICA", code: "23590", credits: 12, type: "P", prerequisites: ["SEMINARIO I", "PROMOCION Y PREVENCION EN FISIOTERAPIA", "FUNCION Y DISCAPACIDAD", "MODALIDADES DEL EJERCICIO TERAPEUTICO II", "MODALIDADES FISICAS II"], requiredFor: ["PRACTICA DOCENCIA SERVICIO I"] }
+                ]
+            },
+            {
+                semester: "Noveno Semestre",
+                courses: [
+                    { name: "PRACTICA DOCENCIA SERVICIO I", code: "22354", credits: 17, type: "P", prerequisites: ["SEMINARIO II", "INTERVENCION FISIOTERAPEUTICA"], unlocks: ["PRACTICA DOCENCIA SERVICIO II"] }
+                ]
+            },
+            {
+                semester: "Decimo Semestre",
+                courses: [
+                    { name: "PRACTICA DOCENCIA SERVICIO II", code: "22355", credits: 17, type: "P", prerequisites: ["PRACTICA DOCENCIA SERVICIO I"] }
+                ]
+            }
+        ];
+
+        // Variables globales
+        let completedCourses = {};
+        let totalCredits = 0;
+        let completedCredits = 0;
+
+        // Función para inicializar la malla curricular
+        function initCurriculum() {
+            const container = document.getElementById('semesters-container');
+            
+            // Calcular créditos totales
+            curriculum.forEach(semester => {
+                semester.courses.forEach(course => {
+                    totalCredits += course.credits;
+                });
+            });
+            
+            document.getElementById('total-credits').textContent = totalCredits;
+            
+            // Generar cada semestre
+            curriculum.forEach((semester, index) => {
+                const semesterDiv = document.createElement('div');
+                semesterDiv.className = 'semester';
+                
+                const title = document.createElement('h2');
+                title.className = 'semester-title';
+                title.textContent = semester.semester;
+                semesterDiv.appendChild(title);
+                
+                const coursesList = document.createElement('div');
+                
+                semester.courses.forEach(course => {
+                    const courseDiv = document.createElement('div');
+                    courseDiv.className = `course ${course.type}`;
+                    courseDiv.dataset.code = course.code;
+                    courseDiv.dataset.credits = course.credits;
+                    
+                    const courseInfo = document.createElement('div');
+                    courseInfo.innerHTML = `<strong>${course.name}</strong> (${course.code}) - Créditos: ${course.credits}`;
+                    
+                    // Mostrar prerrequisitos y desbloqueos si existen
+                    const prereqDiv = document.createElement('div');
+                    prereqDiv.className = 'prerequisites';
+                    
+                    if (course.prerequisites && course.prerequisites.length > 0) {
+                        prereqDiv.innerHTML += `<span>Requiere: ${course.prerequisites.join(', ')}</span><br>`;
+                    }
+                    
+                    if (course.unlocks && course.unlocks.length > 0) {
+                        prereqDiv.innerHTML += `<span>Desbloquea: ${course.unlocks.join(', ')}</span><br>`;
+                    }
+                    
+                    if (course.requiredFor && course.requiredFor.length > 0) {
+                        prereqDiv.innerHTML += `<span>Necesario para: ${course.requiredFor.join(', ')}</span>`;
+                    }
+                    
+                    courseDiv.appendChild(courseInfo);
+                    courseDiv.appendChild(prereqDiv);
+                    
+                    // Evento de clic para marcar/desmarcar curso
+                    courseDiv.addEventListener('click', function() {
+                        toggleCourse(this, course.code, course.credits, course.prerequisites);
+                    });
+                    
+                    coursesList.appendChild(courseDiv);
+                });
+                
+                semesterDiv.appendChild(coursesList);
+                
+                // Contador de créditos del semestre
+                const creditsInfo = document.createElement('div');
+                creditsInfo.className = 'credits-info';
+                creditsInfo.id = `credits-${index}`;
+                creditsInfo.textContent = `Créditos: 0 / ${calculateSemesterCredits(semester)}`;
+                semesterDiv.appendChild(creditsInfo);
+                
+                container.appendChild(semesterDiv);
+            });
+        }
+
+        // Función para calcular créditos de un semestre
+        function calculateSemesterCredits(semester) {
+            return semester.courses.reduce((total, course) => total + course.credits, 0);
+        }
+
+        // Función para alternar curso completado
+        function toggleCourse(element, code, credits, prerequisites) {
+            // Verificar si se pueden completar los prerrequisitos
+            if (!completedCourses[code]) {
+                for (const prereq of prerequisites) {
+                    if (!completedCourses[prereq]) {
+                        alert(`Debes completar primero: ${prereq}`);
+                        return;
+                    }
+                }
+            }
+            
+            // Alternar estado del curso
+            if (completedCourses[code]) {
+                element.classList.remove('completed');
+                delete completedCourses[code];
+                completedCredits -= credits;
+            } else {
+                element.classList.add('completed');
+                completedCourses[code] = true;
+                completedCredits += credits;
+            }
+            
+            // Actualizar contadores
+            updateCreditsCounters();
+        }
+
+        // Función para actualizar todos los contadores de créditos
+        function updateCreditsCounters() {
+            // Actualizar progreso general
+            document.getElementById('completed-credits').textContent = completedCredits;
+            const progressPercentage = Math.round((completedCredits / totalCredits) * 100);
+            document.getElementById('total-progress').textContent = `${progressPercentage}%`;
+            document.getElementById('total-progress').style.width = `${progressPercentage}%`;
+            
+            // Actualizar créditos por semestre
+            curriculum.forEach((semester, index) => {
+                const semesterCredits = semester.courses.reduce((total, course) => {
+                    return total + (completedCourses[course.code] ? course.credits : 0);
+                }, 0);
+                
+                const totalSemesterCredits = calculateSemesterCredits(semester);
+                document.getElementById(`credits-${index}`).textContent = `Créditos: ${semesterCredits} / ${totalSemesterCredits}`;
+            });
+        }
+
+        // Inicializar la malla al cargar la página
+        window.onload = initCurriculum;
+    </script>
+</body>
+</html>
